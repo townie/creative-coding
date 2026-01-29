@@ -4,7 +4,7 @@ import { projects } from "./projects/index.js";
 import { sketches } from "./sketches/index.js";
 import { loadSketch } from "./sketchWrapper.js";
 
-const { div, button, span, h1 } = van.tags;
+const { div, button, span, h1, h2, p } = van.tags;
 
 // State
 const modalOpen = van.state(false);
@@ -24,9 +24,25 @@ const getRoute = () => {
 };
 
 // Navigate to a route
-const navigate = (path) => {
+const navigate = async (path) => {
+  const container = document.getElementById("sketch-container");
+  
+  // Fade out
+  if (container) {
+    container.classList.add("fading-out");
+    await new Promise(r => setTimeout(r, 300));
+  }
+
   history.pushState({}, "", path);
-  handleRoute();
+  await handleRoute();
+  
+  // Fade in
+  if (container) {
+    // Small delay to ensure DOM update
+    setTimeout(() => {
+      container.classList.remove("fading-out");
+    }, 50);
+  }
 };
 
 // Load a project page
@@ -87,17 +103,23 @@ const loadSketchPage = async (slug) => {
 };
 
 // Handle current route
-const handleRoute = () => {
+const handleRoute = async () => {
   const route = getRoute();
 
   if (route.type === "project") {
-    loadProject(route.slug);
+    await loadProject(route.slug);
   } else if (route.type === "sketch") {
-    loadSketchPage(route.slug);
+    await loadSketchPage(route.slug);
   } else {
     // Show grid on home
     currentProject.val = null;
     modalOpen.val = true;
+    if (p5Instance) {
+      p5Instance.remove();
+      p5Instance = null;
+    }
+    const container = document.getElementById("sketch-container");
+    if (container) container.innerHTML = "";
   }
 };
 
@@ -106,49 +128,53 @@ const createThumbnail = (project, container) => {
   if (project.thumbnail) {
     const img = document.createElement("img");
     img.src = project.thumbnail;
-    img.style.cssText = "width:100%;height:100%;object-fit:cover;";
+    img.alt = project.name;
     container.appendChild(img);
     return;
   }
 
   // Placeholder for projects without thumbnail
-  container.style.background = "#1a1a1a";
-  container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#444;font-size:24px;">◆</div>`;
+  // Use a subtle gradient or pattern instead of just text
+  container.style.background = "linear-gradient(45deg, #111, #1a1a1a)";
 };
 
-// Hamburger menu button
-const MenuButton = () =>
-  button(
-    {
-      class: "menu-btn",
-      onclick: () => (modalOpen.val = true),
-      "aria-label": "Open menu"
-    },
-    span(),
-    span(),
-    span()
-  );
+// Navigation Controls
+const UIControls = () => {
+  const isHovered = van.state(false);
 
-// Back button for projects
-const BackButton = () =>
-  button(
-    {
-      class: "back-btn",
-      onclick: () => navigate("/"),
-      "aria-label": "Back to projects",
-      style: () => currentProject.val ? "display:flex" : "display:none"
+  return div(
+    { 
+      class: "ui-controls",
+      onmouseenter: () => isHovered.val = true,
+      onmouseleave: () => isHovered.val = false,
+      onclick: (e) => {
+        // Only toggle if clicking the container or the button directly
+        if (e.target.closest('.minimal-btn') || e.target.classList.contains('ui-controls')) {
+          modalOpen.val = !modalOpen.val;
+        }
+      }
     },
-    span({ style: "transform: rotate(-45deg) translate(2px, 2px);" }),
-    span({ style: "transform: rotate(45deg) translate(2px, -2px);" })
+    // Main Title/Menu Button
+    button(
+      {
+        class: "minimal-btn main-title-btn",
+      },
+      () => {
+        if (modalOpen.val) {
+           return currentProject.val ? "Close" : "Index";
+        }
+        return currentProject.val?.name || "Index";
+      }
+    ),
+    // Description - reveals on hover
+    div(
+      { 
+        class: () => `nav-description ${isHovered.val && !modalOpen.val && currentProject.val ? "visible" : ""}` 
+      },
+      () => currentProject.val?.description || ""
+    )
   );
-
-// Close button
-const CloseButton = () =>
-  button({
-    class: "close-btn",
-    onclick: () => (modalOpen.val = false),
-    "aria-label": "Close menu"
-  });
+};
 
 // Grid item - supports both projects and sketches
 const GridItem = ({ item, index, type }) => {
@@ -167,8 +193,11 @@ const GridItem = ({ item, index, type }) => {
       }
     },
     container,
-    div({ class: "grid-item-title" }, item.name),
-    item.description ? div({ class: "grid-item-desc" }, item.description) : null
+    div(
+      { class: "grid-item-info" },
+      div({ class: "grid-item-title" }, item.name),
+      item.description ? div({ class: "grid-item-desc" }, item.description) : null
+    )
   );
 };
 
@@ -184,28 +213,21 @@ const Modal = () =>
     {
       class: () => `modal-overlay ${modalOpen.val ? "open" : ""}`
     },
-    div({ class: "modal-header" }, h1("Projects")),
-    CloseButton(),
+    div(
+      { class: "modal-header" },
+      // Header is now minimal, just padding for the buttons
+    ),
     div(
       { class: "grid" },
       ...allItems.map((item, i) => GridItem({ item, index: i, type: item.type }))
     )
   );
 
-// Project title display
-const ProjectTitle = () =>
-  div(
-    { class: "sketch-title" },
-    () => currentProject.val?.name || ""
-  );
-
 // Main app
 const App = () =>
   div(
     div({ id: "sketch-container" }),
-    MenuButton(),
-    BackButton(),
-    ProjectTitle(),
+    UIControls(),
     Modal()
   );
 
@@ -216,7 +238,13 @@ document.body.replaceChildren(App());
 handleRoute();
 
 // Handle browser back/forward
-window.addEventListener("popstate", handleRoute);
+window.addEventListener("popstate", async () => {
+    const container = document.getElementById("sketch-container");
+    container.classList.add("fading-out");
+    await new Promise(r => setTimeout(r, 300));
+    await handleRoute();
+    container.classList.remove("fading-out");
+});
 
 // Keyboard navigation
 document.addEventListener("keydown", (e) => {
