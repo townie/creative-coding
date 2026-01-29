@@ -5,15 +5,18 @@
 }
 
 :root {
-  --bg: #050505;
-  --bg-elevated: #111;
-  --bg-card: #0a0a0a;
-  --border: #333;
-  --text: #e0e0e0;
-  --text-muted: #888;
-  --accent: #fff;
-  --radius: 2px;
-  --transition: 400ms cubic-bezier(0.16, 1, 0.3, 1); /* Elegant ease */
+  --bg: #0b0d10;
+  --bg-elevated: #12151b;
+  --bg-card: #0f1116;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f2f4f8;
+  --text-muted: #9aa3af;
+  --accent: #ffffff;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 14px 40px rgba(0, 0, 0, 0.35);
+  --transition: 320ms cubic-bezier(0.16, 1, 0.3, 1); /* Elegant ease */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
@@ -24,7 +27,10 @@ html, body {
 
 body {
   font-family: var(--font-family);
-  background: var(--bg);
+  background:
+    radial-gradient(1200px 800px at 15% -10%, rgba(255, 255, 255, 0.06), transparent 60%),
+    radial-gradient(900px 700px at 85% 110%, rgba(90, 130, 255, 0.08), transparent 60%),
+    var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -37,7 +43,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg);
+  background: transparent;
   opacity: 1;
   transition: opacity 300ms ease;
 }
@@ -59,8 +65,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end; /* Right align everything */
-  gap: 0; /* Tight spacing for description */
+  gap: 4px; /* Tight spacing for description */
   cursor: pointer; /* Whole area is clickable */
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
 /* Minimal Text Button (replacing icons where possible) */
@@ -71,32 +83,60 @@ body {
   font-family: var(--font-family);
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.14em;
   cursor: pointer;
-  padding: 8px 12px;
-  transition: color var(--transition);
+  padding: 6px 0;
+  border-radius: 0;
+  transition: color var(--transition), transform var(--transition);
   position: relative;
   text-align: right;
 }
 
-.minimal-btn.main-title-btn {
-  font-size: 14px; /* Larger for title */
+.minimal-btn:hover {
   color: var(--text);
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  padding-bottom: 4px; /* Space for underline if needed, or visual breathing room */
+  transform: translateY(-1px);
 }
 
-/* Hide the underline for the main title btn as it's now a block */
+.minimal-btn::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--transition);
+}
+
+.minimal-btn:hover::after {
+  transform: scaleX(1);
+}
+
+.minimal-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
+}
+
+.minimal-btn.main-title-btn {
+  font-size: 13px; /* Larger for title */
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+/* Emphasize underline for the main title */
 .minimal-btn.main-title-btn::after {
-  display: none;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 /* Nav Description */
 .nav-description {
   font-size: 11px;
   color: var(--text-muted);
-  max-width: 200px;
+  max-width: 240px;
   text-align: right;
   line-height: 1.4;
   height: 0;
@@ -120,13 +160,14 @@ body {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(5, 5, 5, 0.98);
+  background: rgba(10, 12, 16, 0.92);
   opacity: 0;
   visibility: hidden;
   transition: all 400ms cubic-bezier(0.22, 1, 0.36, 1);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(8px);
 }
 
 .modal-overlay.open {
@@ -138,9 +179,9 @@ body {
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 48px; /* More breathing room */
-  padding: 120px 48px 48px;
-  max-width: 1600px;
+  gap: 40px; /* More breathing room */
+  padding: 120px 64px 64px;
+  max-width: 1680px;
   margin: 0 auto;
   width: 100%;
 }
@@ -149,28 +190,32 @@ body {
 .grid-item {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   cursor: pointer;
 }
 
 .grid-item-canvas {
   aspect-ratio: 16 / 9;
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.2)), var(--bg-card);
   overflow: hidden;
   position: relative;
-  border-radius: var(--radius);
-  transition: transform var(--transition);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
 }
 
 .grid-item:hover .grid-item-canvas {
-  transform: translateY(-4px);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .grid-item-canvas canvas, .grid-item-canvas img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.8;
+  opacity: 0.85;
   transition: opacity var(--transition);
 }
 
@@ -186,14 +231,14 @@ body {
 }
 
 .grid-item-title {
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--text);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .grid-item-desc {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   line-height: 1.4;
 }
@@ -226,11 +271,13 @@ body {
   z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  background: rgba(10, 10, 10, 0.9);
+  gap: 14px;
+  padding: 18px;
+  background: rgba(16, 18, 22, 0.7);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
   opacity: 0;
   transition: opacity var(--transition);
   min-width: 200px;
@@ -247,8 +294,8 @@ body:hover .project-controls {
 }
 
 .control-group label {
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
   display: flex;
@@ -257,38 +304,81 @@ body:hover .project-controls {
 
 .control-group input[type="range"] {
   width: 100%;
-  height: 2px;
-  background: var(--border);
+  height: 4px;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.15);
   appearance: none;
   cursor: pointer;
 }
 
 .control-group input[type="range"]::-webkit-slider-thumb {
   appearance: none;
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   background: var(--text);
-  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 0;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
 }
 
 .control-group input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(1.5);
 }
 
+.control-group input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 0;
+}
+
+.control-group input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--text);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+}
+
 .project-controls button {
-  padding: 8px;
-  background: transparent;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border);
+  border-radius: 0;
   color: var(--text);
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .project-controls button:hover {
-  border-color: var(--text);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.project-controls button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 28px;
+    padding: 112px 24px 32px;
+  }
+
+  .ui-controls {
+    top: 20px;
+    right: 20px;
+  }
+
+  .project-controls {
+    right: 20px;
+    bottom: 20px;
+  }
 }

@@ -135,7 +135,7 @@ const createThumbnail = (project, container) => {
 
   // Placeholder for projects without thumbnail
   // Use a subtle gradient or pattern instead of just text
-  container.style.background = "linear-gradient(45deg, #111, #1a1a1a)";
+  container.style.background = "linear-gradient(135deg, #12151b, #0b0d10)";
 };
 
 // Navigation Controls
