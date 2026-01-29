@@ -18,5 +18,5 @@ export const projects = [
     slug: "reaction-diffusion",
     description: "Gray-Scott reaction diffusion system",
     load: () => import("./reaction-diffusion/index.js")
-  }
+  },
 ];

@@ -1,6 +1,8 @@
 import van from "vanjs-core";
 import "./index.css";
 import { projects } from "./projects/index.js";
+import { sketches } from "./sketches/index.js";
+import { loadSketch } from "./sketchWrapper.js";
 
 const { div, button, span, h1 } = van.tags;
 
@@ -14,6 +16,9 @@ const getRoute = () => {
   const path = window.location.pathname;
   if (path.startsWith("/project/")) {
     return { type: "project", slug: path.replace("/project/", "") };
+  }
+  if (path.startsWith("/sketch/")) {
+    return { type: "sketch", slug: path.replace("/sketch/", "") };
   }
   return { type: "home" };
 };
@@ -54,12 +59,41 @@ const loadProject = async (slug) => {
   }
 };
 
+// Load a sketch page
+const loadSketchPage = async (slug) => {
+  if (p5Instance) {
+    p5Instance.remove();
+    p5Instance = null;
+  }
+
+  const sketch = sketches.find(s => s.slug === slug);
+  if (!sketch) {
+    navigate("/");
+    return;
+  }
+
+  currentProject.val = sketch;
+
+  // Clear container and load sketch
+  const container = document.getElementById("sketch-container");
+  container.innerHTML = "";
+
+  // Load the sketch using the wrapper
+  try {
+    p5Instance = await loadSketch(sketch.sketchPath, container);
+  } catch (e) {
+    console.error("Failed to load sketch:", e);
+  }
+};
+
 // Handle current route
 const handleRoute = () => {
   const route = getRoute();
 
   if (route.type === "project") {
     loadProject(route.slug);
+  } else if (route.type === "sketch") {
+    loadSketchPage(route.slug);
   } else {
     // Show grid on home
     currentProject.val = null;
@@ -116,25 +150,33 @@ const CloseButton = () =>
     "aria-label": "Close menu"
   });
 
-// Grid item
-const GridItem = ({ project, index }) => {
+// Grid item - supports both projects and sketches
+const GridItem = ({ item, index, type }) => {
   const container = div({ class: "grid-item-canvas" });
 
-  setTimeout(() => createThumbnail(project, container), 50 + index * 20);
+  setTimeout(() => createThumbnail(item, container), 50 + index * 20);
+
+  const route = type === "sketch" ? `/sketch/${item.slug}` : `/project/${item.slug}`;
 
   return div(
     {
       class: "grid-item",
       onclick: () => {
-        navigate(`/project/${project.slug}`);
+        navigate(route);
         modalOpen.val = false;
       }
     },
     container,
-    div({ class: "grid-item-title" }, project.name),
-    project.description ? div({ class: "grid-item-desc" }, project.description) : null
+    div({ class: "grid-item-title" }, item.name),
+    item.description ? div({ class: "grid-item-desc" }, item.description) : null
   );
 };
+
+// Combine projects and sketches for the gallery
+const allItems = [
+  ...projects.map(p => ({ ...p, type: "project" })),
+  ...sketches.map(s => ({ ...s, type: "sketch" }))
+];
 
 // Modal overlay with grid
 const Modal = () =>
@@ -146,7 +188,7 @@ const Modal = () =>
     CloseButton(),
     div(
       { class: "grid" },
-      ...projects.map((project, i) => GridItem({ project, index: i }))
+      ...allItems.map((item, i) => GridItem({ item, index: i, type: item.type }))
     )
   );
 
