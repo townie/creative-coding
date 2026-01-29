@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>p5.js Sketch Gallery</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a0a;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    #sketch-container {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #sketch-container canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .nav {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: opacity 0.5s ease;
+      z-index: 100;
+    }
+
+    .nav.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .nav-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-dot:hover {
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(1.2);
+    }
+
+    .nav-dot.active {
+      background: #fff;
+      transform: scale(1.3);
+    }
+
+    .sketch-title {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: opacity 0.5s ease;
+      z-index: 100;
+    }
+
+    .sketch-title.hidden {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="sketch-container"></div>
+  <div id="app"></div>
+
+  <script type="module">
+    import van from "https://cdn.jsdelivr.net/npm/vanjs-core/src/van.min.js"
+    const { div, button, span } = van.tags
+
+    // Sketch definitions
+    const sketches = [
+      {
+        name: "Flow Field",
+        setup: (p) => {
+          p.cols = Math.floor(p.width / 20)
+          p.rows = Math.floor(p.height / 20)
+          p.flowField = []
+          p.particles = []
+          p.zoff = 0
+          for (let i = 0; i < 500; i++) {
+            p.particles.push({
+              x: p.random(p.width),
+              y: p.random(p.height),
+              prevX: 0,
+              prevY: 0
+            })
+          }
+        },
+        draw: (p) => {
+          p.background(10, 10, 15, 10)
+          let yoff = 0
+          for (let y = 0; y < p.rows; y++) {
+            let xoff = 0
+            for (let x = 0; x < p.cols; x++) {
+              let angle = p.noise(xoff, yoff, p.zoff) * p.TWO_PI * 2
+              p.flowField[x + y * p.cols] = p.createVector(p.cos(angle), p.sin(angle))
+              xoff += 0.1
+            }
+            yoff += 0.1
+          }
+          p.zoff += 0.003
+
+          p.stroke(255, 255, 255, 15)
+          p.strokeWeight(1)
+          for (let particle of p.particles) {
+            let x = Math.floor(particle.x / 20)
+            let y = Math.floor(particle.y / 20)
+            let index = x + y * p.cols
+            let force = p.flowField[index]
+            if (force) {
+              particle.prevX = particle.x
+              particle.prevY = particle.y
+              particle.x += force.x * 2
+              particle.y += force.y * 2
+              p.line(particle.prevX, particle.prevY, particle.x, particle.y)
+            }
+            if (particle.x < 0 || particle.x > p.width || particle.y < 0 || particle.y > p.height) {
+              particle.x = p.random(p.width)
+              particle.y = p.random(p.height)
+            }
+          }
+        }
+      },
+      {
+        name: "Orbits",
+        setup: (p) => {
+          p.orbiters = []
+          for (let i = 0; i < 8; i++) {
+            p.orbiters.push({
+              radius: 50 + i * 35,
+              angle: p.random(p.TWO_PI),
+              speed: 0.01 + p.random(0.02),
+              size: 4 + p.random(8),
+              trail: []
+            })
+          }
+        },
+        draw: (p) => {
+          p.background(10, 10, 15, 25)
+          p.translate(p.width / 2, p.height / 2)
+
+          p.noStroke()
+          p.fill(255, 200, 100)
+          p.circle(0, 0, 20)
+
+          for (let orb of p.orbiters) {
+            orb.angle += orb.speed
+            let x = p.cos(orb.angle) * orb.radius
+            let y = p.sin(orb.angle) * orb.radius * 0.4
+
+            orb.trail.push({x, y})
+            if (orb.trail.length > 50) orb.trail.shift()
+
+            p.noFill()
+            p.stroke(100, 150, 255, 30)
+            p.strokeWeight(1)
+            p.ellipse(0, 0, orb.radius * 2, orb.radius * 0.8)
+
+            for (let i = 0; i < orb.trail.length; i++) {
+              let alpha = (i / orb.trail.length) * 100
+              p.fill(100, 150, 255, alpha)
+              p.noStroke()
+              let size = (i / orb.trail.length) * orb.size
+              p.circle(orb.trail[i].x, orb.trail[i].y, size)
+            }
+
+            p.fill(150, 200, 255)
+            p.circle(x, y, orb.size)
+          }
+        }
+      },
+      {
+        name: "Waves",
+        setup: (p) => {
+          p.time = 0
+        },
+        draw: (p) => {
+          p.background(10, 10, 15)
+          p.noFill()
+
+          for (let i = 0; i < 20; i++) {
+            let hue = (i * 10 + p.time * 20) % 360
+            p.stroke(p.color(`hsla(${hue}, 70%, 60%, 0.5)`))
+            p.strokeWeight(2)
+
+            p.beginShape()
+            for (let x = 0; x <= p.width; x += 5) {
+              let y = p.height / 2 +
+                p.sin(x * 0.01 + p.time + i * 0.5) * 50 +
+                p.sin(x * 0.02 + p.time * 1.5 + i * 0.3) * 30 +
+                i * 15 - 150
+              p.vertex(x, y)
+            }
+            p.endShape()
+          }
+          p.time += 0.02
+        }
+      },
+      {
+        name: "Constellation",
+        setup: (p) => {
+          p.stars = []
+          for (let i = 0; i < 100; i++) {
+            p.stars.push({
+              x: p.random(p.width),
+              y: p.random(p.height),
+              size: p.random(1, 4),
+              twinkle: p.random(p.TWO_PI)
+            })
+          }
+        },
+        draw: (p) => {
+          p.background(10, 10, 20)
+
+          p.stroke(255, 255, 255, 30)
+          p.strokeWeight(1)
+          for (let i = 0; i < p.stars.length; i++) {
+            for (let j = i + 1; j < p.stars.length; j++) {
+              let d = p.dist(p.stars[i].x, p.stars[i].y, p.stars[j].x, p.stars[j].y)
+              if (d < 80) {
+                let alpha = p.map(d, 0, 80, 50, 0)
+                p.stroke(255, 255, 255, alpha)
+                p.line(p.stars[i].x, p.stars[i].y, p.stars[j].x, p.stars[j].y)
+              }
+            }
+          }
+
+          p.noStroke()
+          for (let star of p.stars) {
+            star.twinkle += 0.05
+            let brightness = p.map(p.sin(star.twinkle), -1, 1, 150, 255)
+            p.fill(brightness)
+            p.circle(star.x, star.y, star.size * p.map(p.sin(star.twinkle), -1, 1, 0.8, 1.2))
+
+            star.x += p.random(-0.3, 0.3)
+            star.y += p.random(-0.3, 0.3)
+            star.x = p.constrain(star.x, 0, p.width)
+            star.y = p.constrain(star.y, 0, p.height)
+          }
+        }
+      },
+      {
+        name: "Pulse",
+        setup: (p) => {
+          p.rings = []
+        },
+        draw: (p) => {
+          p.background(10, 10, 15)
+          p.translate(p.width / 2, p.height / 2)
+
+          if (p.frameCount % 30 === 0) {
+            p.rings.push({ radius: 0, alpha: 255 })
+          }
+
+          p.noFill()
+          for (let i = p.rings.length - 1; i >= 0; i--) {
+            let ring = p.rings[i]
+            let hue = (ring.radius + p.frameCount) % 360
+            p.stroke(p.color(`hsla(${hue}, 80%, 60%, ${ring.alpha / 255})`))
+            p.strokeWeight(3)
+            p.circle(0, 0, ring.radius)
+
+            ring.radius += 3
+            ring.alpha -= 1.5
+
+            if (ring.alpha <= 0) {
+              p.rings.splice(i, 1)
+            }
+          }
+
+          p.fill(255)
+          p.noStroke()
+          let pulseSize = 20 + p.sin(p.frameCount * 0.1) * 5
+          p.circle(0, 0, pulseSize)
+        }
+      }
+    ]
+
+    // State
+    const currentSketch = van.state(0)
+    const navVisible = van.state(true)
+    let mouseTimer = null
+    let p5Instance = null
+
+    // Mouse movement detection
+    const resetMouseTimer = () => {
+      navVisible.val = true
+      clearTimeout(mouseTimer)
+      mouseTimer = setTimeout(() => {
+        navVisible.val = false
+      }, 2000)
+    }
+
+    document.addEventListener('mousemove', resetMouseTimer)
+    document.addEventListener('click', resetMouseTimer)
+    resetMouseTimer()
+
+    // Load sketch
+    const loadSketch = (index) => {
+      if (p5Instance) {
+        p5Instance.remove()
+      }
+
+      const sketch = sketches[index]
+      p5Instance = new p5((p) => {
+        p.setup = () => {
+          const canvas = p.createCanvas(p.windowWidth, p.windowHeight)
+          canvas.parent('sketch-container')
+          sketch.setup(p)
+        }
+        p.draw = () => sketch.draw(p)
+        p.windowResized = () => {
+          p.resizeCanvas(p.windowWidth, p.windowHeight)
+          sketch.setup(p)
+        }
+      })
+    }
+
+    // Components
+    const NavDot = ({index}) => button({
+      class: () => `nav-dot ${currentSketch.val === index ? 'active' : ''}`,
+      onclick: () => {
+        currentSketch.val = index
+        loadSketch(index)
+      },
+      title: sketches[index].name
+    })
+
+    const Nav = () => div({
+      class: () => `nav ${navVisible.val ? '' : 'hidden'}`
+    }, ...sketches.map((_, i) => NavDot({index: i})))
+
+    const Title = () => span({
+      class: () => `sketch-title ${navVisible.val ? '' : 'hidden'}`
+    }, () => sketches[currentSketch.val].name)
+
+    // Mount
+    van.add(document.getElementById('app'), Nav(), Title())
+
+    // Initial load
+    loadSketch(0)
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        currentSketch.val = (currentSketch.val + 1) % sketches.length
+        loadSketch(currentSketch.val)
+        resetMouseTimer()
+      } else if (e.key === 'ArrowLeft') {
+        currentSketch.val = (currentSketch.val - 1 + sketches.length) % sketches.length
+        loadSketch(currentSketch.val)
+        resetMouseTimer()
+      }
+    })
+  </script>
+</body>
+</html>

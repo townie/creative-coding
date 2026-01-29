@@ -1,0 +1,409 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #000;
+  --bg-elevated: #0a0a0a;
+  --bg-card: #111;
+  --border: #222;
+  --text: #fff;
+  --text-muted: #666;
+  --accent: #fff;
+  --radius: 4px;
+  --transition: 200ms ease;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Main canvas container */
+#sketch-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+#sketch-container canvas {
+  display: block;
+}
+
+/* Hamburger button */
+.menu-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.5;
+  transition: opacity var(--transition);
+}
+
+.menu-btn:hover {
+  opacity: 1;
+}
+
+.menu-btn span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  transition: all var(--transition);
+}
+
+.menu-btn:hover span:nth-child(1) {
+  transform: translateY(-2px);
+}
+
+.menu-btn:hover span:nth-child(3) {
+  transform: translateY(2px);
+}
+
+/* Sketch title overlay */
+.sketch-title {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 100;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+body:hover .sketch-title {
+  opacity: 1;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 300ms ease;
+  overflow-y: auto;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Close button */
+.close-btn {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 210;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity var(--transition);
+}
+
+.close-btn:hover {
+  opacity: 1;
+}
+
+.close-btn::before,
+.close-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+}
+
+.close-btn::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.close-btn::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2px;
+  padding: 80px 24px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Grid item */
+.grid-item {
+  aspect-ratio: 16 / 10;
+  background: var(--bg-card);
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: all var(--transition);
+}
+
+.grid-item:hover {
+  z-index: 1;
+  transform: scale(1.02);
+}
+
+.grid-item canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.grid-item-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.grid-item:hover .grid-item-title {
+  opacity: 1;
+}
+
+/* Modal header */
+.modal-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 205;
+  padding: 24px;
+  background: linear-gradient(var(--bg), transparent);
+}
+
+.modal-header h1 {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Keyboard hint */
+.hint {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+body:hover .hint {
+  opacity: 1;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-family: inherit;
+  font-size: 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  margin: 0 2px;
+}
+
+/* Back button for projects */
+.back-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  opacity: 0.5;
+  transition: opacity var(--transition);
+}
+
+.back-btn:hover {
+  opacity: 1;
+}
+
+.back-btn span {
+  display: block;
+  width: 12px;
+  height: 2px;
+  background: var(--text);
+}
+
+/* Grid item canvas container */
+.grid-item-canvas {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.grid-item-canvas canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Project grid items */
+.grid-item-project {
+  border: 1px solid var(--border);
+}
+
+.grid-item-project:hover {
+  border-color: #444;
+}
+
+/* Project badge */
+.grid-item-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  color: var(--text-muted);
+}
+
+/* Project controls panel */
+.project-controls {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  gap: 24px;
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+body:hover .project-controls {
+  opacity: 1;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-group label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.control-group input[type="range"] {
+  width: 100px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.control-group input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--text);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.control-group select {
+  padding: 6px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.control-group select:focus {
+  outline: none;
+  border-color: #444;
+}
+
+.project-controls button {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.project-controls button:hover {
+  background: var(--bg-elevated);
+  border-color: #444;
+  color: var(--text);
+}
