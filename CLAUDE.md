@@ -22,32 +22,13 @@ p5.js is loaded via CDN in index.html, not as an npm dependency.
 src/
 ├── index.js          # Main app, routing, UI
 ├── index.css         # Global styles
-├── sketches.js       # Single-file quick sketches (inline loading)
 └── projects/
     ├── index.js      # Project registry
     └── {name}/       # Multi-file project folders
         └── index.js  # Must export init(container) → p5 instance
 ```
 
-## Adding a Simple Sketch
-
-Add to `src/sketches.js`:
-
-```js
-{
-  name: "My Sketch",
-  setup: (p) => {
-    // p5 setup code
-  },
-  draw: (p) => {
-    // p5 draw code
-  }
-}
-```
-
-Sketches load inline and cycle with arrow keys / spacebar.
-
-## Adding a Complex Project
+## Adding a Project
 
 1. Create folder: `src/projects/my-project/`
 
@@ -109,7 +90,5 @@ Available control styles: `input[type="range"]`, `select`, `button`
 
 ## Navigation
 
-- `Space` / `→` - next sketch
-- `←` - previous sketch
 - `M` - toggle menu
-- `Esc` - close menu / back to sketches (from project)
+- `Esc` - close menu / back to project list
