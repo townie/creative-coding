@@ -1,4 +1,4 @@
 {
-  "name": "Bio-Mechanic Snake",
-  "description": "Autonomous bio-mechanical snake with neural Central Pattern Generator, segmented vertebrae, muscle tension visualization, and biological needs system. Features LIDAR-like vision and adaptive behavior."
+  "name": "Orbits Plane Chaos",
+  "description": "3D particle swarm inside a spherical boundary with MRI-style slice visualization. Features split-screen view showing 2D cross-section and rotating 3D globe, adjustable scan depth, and particle tracking."
 }

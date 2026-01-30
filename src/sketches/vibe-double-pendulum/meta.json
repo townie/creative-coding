@@ -1,4 +1,4 @@
 {
   "name": "Vibe Double Pendulum",
-  "description": "Vibe Double Pendulum"
+  "description": "Interactive double compound pendulum demonstrating chaotic motion with RK4 integration. Adjust gravity, speed, and spawn multiple pendulums to visualize chaos theory. Features force vectors and colorful trails."
 }

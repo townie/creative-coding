@@ -1,4 +1,4 @@
 {
-  "name": "Vortex Neon Swarm",
-  "description": "High-performance neon particle system with up to 8000 particles. Features Perlin noise flow fields, mouse-controlled vortex gravity wells, particle emitters, and CRT/glitch visual effects."
+  "name": "Neon Bubbles",
+  "description": "Interactive particle trail that follows your cursor with vibrant HSB color cycling. Particles spawn, drift with random velocities, shrink and fade over time creating a rainbow neon effect."
 }
