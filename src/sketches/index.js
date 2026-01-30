@@ -19,6 +19,10 @@ export const sketches = Object.entries(metaModules).map(([path, module]) => {
     thumbnail: meta.thumbnail || null,
     tags: meta.tags || [],
     // Load function returns the path to the sketch for the wrapper to handle
-    sketchPath: `/src/sketches/${slug}/sketch.js`
+    // In dev: /src/sketches/slug/sketch.js (Vite serves source)
+    // In prod: /sketches/slug/sketch.js (built output)
+    sketchPath: import.meta.env.DEV
+      ? `/src/sketches/${slug}/sketch.js`
+      : `/sketches/${slug}/sketch.js`
   };
 });

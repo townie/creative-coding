@@ -15,7 +15,10 @@
  */
 export async function loadSketch(sketchPath, container) {
   // Security: Validate path format (basic check)
-  if (!sketchPath.startsWith('/src/sketches/') || !sketchPath.endsWith('.js')) {
+  // Dev: /src/sketches/slug/sketch.js, Prod: /sketches/slug/sketch.js
+  const validDevPath = sketchPath.startsWith('/src/sketches/') && sketchPath.endsWith('.js');
+  const validProdPath = sketchPath.startsWith('/sketches/') && sketchPath.endsWith('.js');
+  if (!validDevPath && !validProdPath) {
     throw new Error('Invalid sketch path format');
   }
 

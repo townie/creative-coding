@@ -8,15 +8,15 @@
 
 export const projects = [
   {
-    name: "Boids",
+    name: "Boids Flocking Simulation",
     slug: "boids",
-    description: "Flocking simulation with emergent behavior",
+    description: "Watch hundreds of autonomous agents exhibit lifelike flocking behavior using Craig Reynolds' classic algorithm. Adjust separation, alignment, and cohesion forces to see how simple rules create complex emergent patterns.",
     load: () => import("./boids/index.js")
   },
   {
     name: "Reaction Diffusion",
     slug: "reaction-diffusion",
-    description: "Gray-Scott reaction diffusion system",
+    description: "A Gray-Scott reaction-diffusion system that simulates two chemicals interacting and diffusing across a surface. Click to seed new reactions and explore presets like mitosis, coral, maze, and chaos to discover organic pattern formation.",
     load: () => import("./reaction-diffusion/index.js")
   },
 ];
