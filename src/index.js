@@ -3,6 +3,7 @@ import "./index.css";
 import { projects } from "./projects/index.js";
 import { sketches } from "./sketches/index.js";
 import { loadSketch } from "./sketchWrapper.js";
+import { AdminPage } from "./admin.js";
 
 const { div, button, span, h1, h2, p } = van.tags;
 
@@ -14,6 +15,9 @@ let p5Instance = null;
 // Simple router
 const getRoute = () => {
   const path = window.location.pathname;
+  if (path === "/admin") {
+    return { type: "admin" };
+  }
   if (path.startsWith("/project/")) {
     return { type: "project", slug: path.replace("/project/", "") };
   }
@@ -106,7 +110,20 @@ const loadSketchPage = async (slug) => {
 const handleRoute = async () => {
   const route = getRoute();
 
-  if (route.type === "project") {
+  if (route.type === "admin") {
+    // Admin page
+    currentProject.val = null;
+    modalOpen.val = false;
+    if (p5Instance) {
+      p5Instance.remove();
+      p5Instance = null;
+    }
+    const container = document.getElementById("sketch-container");
+    if (container) {
+      container.innerHTML = "";
+      van.add(container, AdminPage());
+    }
+  } else if (route.type === "project") {
     await loadProject(route.slug);
   } else if (route.type === "sketch") {
     await loadSketchPage(route.slug);
@@ -125,17 +142,24 @@ const handleRoute = async () => {
 
 // Create thumbnail preview for grid
 const createThumbnail = (project, container) => {
-  if (project.thumbnail) {
-    const img = document.createElement("img");
-    img.src = project.thumbnail;
-    img.alt = project.name;
-    container.appendChild(img);
-    return;
-  }
+  const autoPath = `/thumbnails/${project.slug}.png`;
+  const img = document.createElement("img");
+  img.alt = project.name;
 
-  // Placeholder for projects without thumbnail
-  // Use a subtle gradient or pattern instead of just text
-  container.style.background = "linear-gradient(135deg, #12151b, #0b0d10)";
+  // Try auto-detected path first, then explicit thumbnail, with gradient fallback
+  img.src = project.thumbnail || autoPath;
+  img.onerror = () => {
+    // If explicit thumbnail was set and failed, don't try auto path
+    if (project.thumbnail && img.src.includes(project.thumbnail)) {
+      img.remove();
+      container.style.background = "linear-gradient(135deg, #12151b, #0b0d10)";
+      return;
+    }
+    // If auto path failed, fall back to gradient
+    img.remove();
+    container.style.background = "linear-gradient(135deg, #12151b, #0b0d10)";
+  };
+  container.appendChild(img);
 };
 
 // Navigation Controls
