@@ -1,4 +1,4 @@
 {
   "name": "Fish Evolution",
-  "description": "Neuro-muscular fish simulation with physics-based movement"
+  "description": "Evolutionary bio-kinematic swarm with neural networks that learn via real-time backpropagation. Fish navigate mazes using sensors, compete across generations, and evolve swimming patterns. Features lineage visualization and custom fish designer."
 }

@@ -1,4 +1,4 @@
 {
   "name": "Galaxy Blackhole",
-  "description": "N-body simulation with auto-spawning pairs, blackhole, and cinematic camera"
+  "description": "Cinematic N-body galaxy simulation with auto-spawning color-paired bodies that orbit together. A central blackhole vacuums lonely particles while paired bodies can escape to freedom. Features 5 camera modes including cluster tracking."
 }

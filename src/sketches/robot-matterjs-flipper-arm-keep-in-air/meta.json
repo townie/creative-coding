@@ -1,4 +1,4 @@
 {
   "name": "Robot MatterJS Flipper Arm Keep in Air",
-  "description": "Neuro-muscular fish simulation with physics-based movement"
+  "description": "Physics-based robotic arm simulation using Matter.js. A multi-segment arm attempts to keep falling debris in the air through AI-controlled movements with adjustable parameters."
 }

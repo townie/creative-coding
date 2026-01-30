@@ -1,4 +1,4 @@
 {
   "name": "Robot 2D Play Catch",
-  "description": "Robot 2D play catch simulation"
+  "description": "Two-way catch game with a kinematic robot arm. Launch projectiles with a slingshot, watch the robot catch and throw them back. Includes rally scoring and bidirectional physics."
 }

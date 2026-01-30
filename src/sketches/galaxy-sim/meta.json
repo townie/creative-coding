@@ -1,4 +1,4 @@
 {
   "name": "Galaxy Simulation",
-  "description": "N-body gravitational simulation with zoom, pan, and minimap"
+  "description": "N-body gravitational simulation with orbital mechanics, colorful trails, and smooth zoom/pan controls. Features a minimap showing the full galaxy view with viewport indicator. Click to add new celestial bodies."
 }

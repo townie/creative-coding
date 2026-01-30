@@ -1,4 +1,4 @@
 {
   "name": "Evolutionary Lawn Mowing Pattern",
-  "description": "Evolutionary Lawn Mowing Pattern"
+  "description": "Genetic algorithm simulation evolving optimal lawn mowing strategies. Multiple robot behaviors compete and evolve across generations with A* pathfinding, Hall of Fame persistence, and replay features."
 }

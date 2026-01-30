@@ -1,4 +1,4 @@
 {
   "name": "Robot Pick-n-Place 2D",
-  "description": "Robot pick-n-place simulation in 2D"
+  "description": "Factory automation simulation featuring a robotic arm that picks items from a conveyor belt and places them in bins. Includes analytics dashboard, E-stop controls, and TCP camera view."
 }

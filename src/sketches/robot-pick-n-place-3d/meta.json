@@ -1,4 +1,4 @@
 {
   "name": "Robot Pick-n-Place 3D",
-  "description": "Robot pick-n-place simulation in 3D"
+  "description": "6-DOF robotic arm simulation with full forward/inverse kinematics, LIDAR scanning, mesh-based collision physics, joint limits, and calibration controls in a 3D environment."
 }

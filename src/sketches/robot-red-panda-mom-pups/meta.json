@@ -1,4 +1,4 @@
 {
   "name": "Robot Red Panda Mom Pups",
-  "description": "Robot Red Panda Mom Pups"
+  "description": "Physics-driven red panda nurturing simulation using Matter.js. A chain-body mother panda gathers wandering pups and guides them to bed. Features AI behavior and nursery environment."
 }

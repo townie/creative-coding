@@ -1,4 +1,4 @@
 {
   "name": "Robot 2D Alley OOP Game",
-  "description": "Robot 2D catch and place simulation"
+  "description": "Interactive kinematic robot game where you drag and shoot projectiles at an AI robot that predicts trajectories and intercepts them mid-air, then deposits caught items in a bin. Features performance analytics and camera tracking."
 }
