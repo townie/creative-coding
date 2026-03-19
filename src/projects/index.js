@@ -8,6 +8,12 @@
 
 export const projects = [
   {
+    name: "Aizawa Attractor",
+    slug: "aizawa-attractor",
+    description: "A rotating 3D strange attractor generated from the Aizawa system. Explore different parameter presets and tune trail persistence to reveal dense orbit structures.",
+    load: () => import("./aizawa-attractor/index.js")
+  },
+  {
     name: "Boids Flocking Simulation",
     slug: "boids",
     description: "Watch hundreds of autonomous agents exhibit lifelike flocking behavior using Craig Reynolds' classic algorithm. Adjust separation, alignment, and cohesion forces to see how simple rules create complex emergent patterns.",
