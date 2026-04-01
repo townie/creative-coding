@@ -25,4 +25,10 @@ export const projects = [
     description: "A Gray-Scott reaction-diffusion system that simulates two chemicals interacting and diffusing across a surface. Click to seed new reactions and explore presets like mitosis, coral, maze, and chaos to discover organic pattern formation.",
     load: () => import("./reaction-diffusion/index.js")
   },
+  {
+    name: "Game of Life: Branching Time Travel",
+    slug: "game-of-life-time-travel",
+    description: "A 4D cellular automaton explorer. Run Conway's Game of Life, rewind to any generation, edit cells to fork new timelines, and build a massive branching history. Visualizes grid state, time, and branching dimensions simultaneously.",
+    load: () => import("./game-of-life-time-travel/index.js")
+  },
 ];
